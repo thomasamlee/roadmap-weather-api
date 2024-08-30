@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node --env-file .env.prod dist/index.js",
+    "start": "node --env-file .env dist/index.js",
     "dev": "node --env-file .env --watch -r ts-node/register src/index.ts | pino-pretty",
     "build": "tsc"
   },
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
     "pino": "^9.3.2"
   }
 }
