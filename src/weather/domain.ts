@@ -17,10 +17,10 @@ export async function fetchWeatherApi<T = any>({
 }) {
   const url = new URL(
     `/${location}/${date1}/${date2}`,
-    config.weatherApiBaseUrl
+    config.get("visualCrossingApi.baseUrl")
   );
 
-  url.searchParams.set("key", config.weatherApiKey);
+  url.searchParams.set("key", config.get("visualCrossingApi.key"));
 
   const response = await fetch(url);
   const data: T = await response.json();

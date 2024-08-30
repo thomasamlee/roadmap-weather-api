@@ -4,7 +4,7 @@ import { logger } from "./libraries/logger";
 import { router as weatherRouter } from "./weather";
 
 const app = express();
-const port = config.port;
+const port = config.get("port");
 
 app.use("/weather", weatherRouter);
 
