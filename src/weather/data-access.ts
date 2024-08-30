@@ -1,1 +1,1 @@
-// DB calls w/o ORM
+// REDIS calls here

@@ -1,4 +1,5 @@
 export const config = {
   port: process.env.PORT,
-  visualCrossingKey: process.env.VISUAL_CROSSING_KEY,
+  weatherApiKey: process.env.VISUAL_CROSSING_KEY || "",
+  weatherApiBaseUrl: process.env.VISUAL_CROSSING_BASE_URL || "",
 };
