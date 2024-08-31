@@ -1,18 +1,9 @@
-// features and flows: DTO, services, logic
-
-import express, { RequestHandler } from "express";
 import { config } from "../libraries/config";
-
-export const router = express.Router();
 
 const baseUrl = config.get("visualCrossingApi.baseUrl");
 const apiKey = config.get("visualCrossingApi.key");
 
-export function getTimelineWeatherUrl(
-  location: string,
-  date1?: string,
-  date2?: string
-) {
+function createUrl(location: string, date1?: string, date2?: string) {
   let url = new URL(baseUrl + "/" + location);
 
   if (date1) {
@@ -27,3 +18,16 @@ export function getTimelineWeatherUrl(
 
   return url;
 }
+
+export const getTimelineWeather = async (
+  location: string,
+  date1?: string,
+  date2?: string
+) => {
+  const response = await fetch(createUrl(location, date1, date2));
+  return await response.json();
+};
+
+export const api = {
+  getTimelineWeather,
+};
