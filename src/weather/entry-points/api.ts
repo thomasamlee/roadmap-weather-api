@@ -1,20 +1,38 @@
-import express from "express";
-import { logger } from "../../libraries/logger";
+import express, { RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
-import { config } from "../../libraries/config";
+import { z, ZodError } from "zod";
+import { logger } from "../../libraries/logger";
+import { getTimelineWeatherUrl } from "../domain";
 
 export const router = express.Router();
 
-const baseUrl = config.get("visualCrossingApi.baseUrl");
-const apiKey = config.get("visualCrossingApi.key");
+const paramSchema = z.string();
 
-router.get("/", async (req, res) => {
+const validateParamMiddleware: RequestHandler = (req, res, next) => {
   try {
-    const url = new URL(baseUrl);
-    url.pathname = url.pathname + "/75010";
-    url.searchParams.set("key", apiKey);
+    paramSchema.parse(req.params.location);
+    next();
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const errorMessages = error.errors.map((issue) => ({
+        message: `${issue.path.join(".")} is ${issue.message}`,
+      }));
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ error: "Missing Location param", details: errorMessages });
+    } else {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ error: "Internal Server Error" });
+    }
+  }
+};
 
-    const response = await fetch(url);
+const handler: RequestHandler = async (req, res) => {
+  try {
+    const { location } = req.params;
+
+    const response = await fetch(getTimelineWeatherUrl(location));
     const data = await response.json();
     res.send(data);
   } catch (error) {
@@ -23,4 +41,6 @@ router.get("/", async (req, res) => {
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: "Internal Server Error" });
   }
-});
+};
+
+router.get("/:location", validateParamMiddleware, handler);
